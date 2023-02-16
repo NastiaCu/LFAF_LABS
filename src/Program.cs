@@ -1,17 +1,25 @@
-﻿class Program{
-    public static void Main(String[] args){
-        
-        Grammar grammar = new Grammar();
-        FiniteAutomaton automaton = grammar.ToFiniteAutomaton();
+﻿using System;
 
-        grammar.GenerateString();
-        grammar.GenerateString();
-        grammar.GenerateString();
-        grammar.GenerateString();
-        grammar.GenerateString();
+namespace LFAF_LABS{
 
-        if (automaton.isValid("abab")){
-            Console.WriteLine("flse");
+    class Program{
+        public static void Main(String[] args){
+            
+            Grammar grammar = new Grammar();
+            FiniteAutomaton automaton = grammar.ToFiniteAutomaton();
+
+            grammar.GenerateString();
+            grammar.GenerateString();
+            grammar.GenerateString();
+            grammar.GenerateString();
+            grammar.GenerateString();
+
+            string s = "acbab";
+
+            if (automaton.isValid(s)){
+                Console.WriteLine(s + " is a valid string");
+            }
+            else Console.WriteLine(s + "is an invalid string");
         }
     }
 }
