@@ -62,7 +62,7 @@ The `Finite Automaton` is a state machine, which has 5 tuples:
 
 ## Implementation description
 
-To generate 5 valid strings from the grammar I made a `GenerateString()` function, which takes the string with the starting character "S". After that it checks if the string contains non-terminal symbols `{ S, B, D }` and if it finds them, it randomly selects the options for the next characters from the production. and adds it to the string to make a word. After that it checks if the final string is termanal and prints the results.
+To generate 5 valid strings from the grammar I made a `GenerateString()` function, which takes the string with the starting character "S". After that it checks if the string contains non-terminal symbols `{ S, B, D }` and if it finds them, it randomly selects the options for the next characters from the production and adds it to the string to make a word. After that it checks if the final string is termanal and prints the results.
 
 ```c#
 public void GenerateString(){
@@ -145,7 +145,7 @@ public FiniteAutomaton ToFiniteAutomaton(){
         }
 ```
 
-For the Finite Futomaton we have an `isValid()` class, which checks if an input string can be obtained via the state transition from it. Basically, it takes the initial state of the finite automaton and checks evety symbol in the input string if it exists in the alphabet (alphabet - set of terminal characters). After that it checks if there is a transition from the current state to the next state (transition from the current state to some state for the current symbol).
+For the Finite Futomaton we have an `isValid()` class, which checks if an input string can be obtained via the state transition from it. Basically, it takes the initial state of the finite automaton and checks every symbol in the input string if it exists in the alphabet (alphabet - set of terminal characters). After that it checks if there is a transition from the current state to the next state (transition from the current state to some state for the current symbol).
 
 ```c#
 public bool isValid(string input){
