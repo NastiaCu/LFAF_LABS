@@ -260,7 +260,7 @@ public void ToGraph(string filename){
 ```
 
 ## Conclusions / Screenshots / Results
-After performing this laboratory work I studied the types of the `Grammar` according to the `Chomsky Hierarchy`. I also understood the difference between an NFA and a DFA and implemented the function which determines whether a FA is deterministic or not   
+  After performing this laboratory work I studied the types of the `Grammar` according to the `Chomsky Hierarchy`. I also understood the difference between an NFA and a DFA and implemented the function which determines whether a FA is deterministic or not. I implemented the algorithm of conversion the NFA to the DFA and made a function to make the graphical representation of the `Finite Automaton`.
 
 After running the project we get the following results:
 ```
@@ -278,6 +278,13 @@ Set of states for the new DFA["q0","q1","q2","q3","q0,q3"]
 Set of final states for the new DFA["q3","q0,q3"]
 Set of transitions for the new DFA{"q0":{"a":["q1"],"b":["q2"]},"q1":{"a":["q3"],"b":["q2"]},"q2":{"c":["q0,q3"]},"q0,q3":{"a":["q1"],"b":["q2"]}}
 ```
+The NFA looks as follows:
+
+![fa](https://user-images.githubusercontent.com/96084704/223481183-00ff8692-2c45-40ff-946d-8f77b658c740.png)
+
+The DFA after NFA to DFA conversion looks as follows:
+
+![dfa](https://user-images.githubusercontent.com/96084704/223481638-434097c6-7d0b-4aa8-b21a-0e1402dd6891.png)
 
 ## References 
 
