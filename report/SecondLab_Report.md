@@ -15,13 +15,13 @@ There are 4 types of the Grammar according to the Chomsky Hierarchy:
   AB → aB | b 
   aB → Bb
   ```
-* Type 1, Context Free
+* Type 1, Context Sensitive
   The left side of the production has to be shorter than the right side.
   Can be of the form:
   ```
   AB → aBaB | a
   ```
-* Type 2, Context Sensitive
+* Type 2, Context Free
   The left side of the production has to be a single non-terminal symbol.
   Can be of the form:
   ```
