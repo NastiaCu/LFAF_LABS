@@ -10,24 +10,30 @@
 **Chomsky Hierarchy**
 There are 4 types of the Grammar according to the Chomsky Hierarchy:
 * Type 0, Unrestricted 
+
   The prodcution has no restrictions, can be of the form:
   ```
   AB → aB | b 
   aB → Bb
   ```
 * Type 1, Context Sensitive
+  
   The left side of the production has to be shorter than the right side.
+  
   Can be of the form:
   ```
   AB → aBaB | a
   ```
 * Type 2, Context Free
+  
   The left side of the production has to be a single non-terminal symbol.
+  
   Can be of the form:
   ```
   A → abaB | a
   ```
 * Type 3, Regular Grammar
+  
   The most strict one, can be of the form:
   ```
   A → aB | a
@@ -36,6 +42,7 @@ There are 4 types of the Grammar according to the Chomsky Hierarchy:
 
 **NFA vs DFA**
 The NFA is a Finite automaton, which has the repetitions in the transitions.
+
 For example:
 ```
 Q = {q0,q1,q2,q3},
@@ -260,7 +267,7 @@ public void ToGraph(string filename){
 ```
 
 ## Conclusions / Screenshots / Results
-  After performing this laboratory work I studied the types of the `Grammar` according to the `Chomsky Hierarchy`. I also understood the difference between an NFA and a DFA and implemented the function which determines whether a FA is deterministic or not. I implemented the algorithm of conversion the NFA to the DFA and made a function to make the graphical representation of the `Finite Automaton`.
+After performing this laboratory work I studied the types of the `Grammar` according to the `Chomsky Hierarchy`. I also understood the difference between an NFA and a DFA and implemented the function which determines whether a FA is deterministic or not. I implemented the algorithm of conversion the NFA to the DFA and made a function to make the graphical representation of the `Finite Automaton`.
 
 After running the project we get the following results:
 ```
