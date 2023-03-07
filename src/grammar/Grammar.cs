@@ -4,15 +4,10 @@ namespace LFAF_LABS{
 
     class Grammar{
 
-        private List<string> VN = new List<string> { "S", "B", "D" };
-        private List<string> VT = new List<string> { "a", "b", "c" };
-        private Dictionary<string, List<string>> P = new Dictionary<string, List<string>>();
-
-        public Grammar(){
-            P["S"] = new List<string> { "aB", "bB" };
-            P["B"] = new List<string> { "bD", "cB", "aS" };
-            P["D"] = new List<string> { "b", "aD" };
-        }
+        private string start = "";
+        public List<string> VN = new List<string>();
+        public List<string> VT = new List<string>();
+        public Dictionary<string, List<string>> P = new Dictionary<string, List<string>>();
 
         public List<string> GetVN(){
             return VN;
@@ -23,13 +18,38 @@ namespace LFAF_LABS{
         }
 
         public Dictionary<string, List<string>> GetP(){
+            Console.WriteLine(P);
             return P;
+        }
+
+        public string GetStart(){
+            return start;
+        }
+
+        public void AddVN(string vn){
+            VN.Add(vn);
+        }
+
+        public void AddVT(string vt){
+            VT.Add(vt);
+        }
+
+        public void AddStart(String start){
+            this.start = start;
+        }
+
+        public void AddProduction(string VN, string production){
+            if (!P.ContainsKey(VN)){
+                P[VN] = new List<string>();
+            }
+
+            P[VN].Add(production);
         }
 
         public void GenerateString(){
             
             Random random = new Random();
-            string s = "S";
+            string s = this.start;
             
             while (true){
                 string word = "";
@@ -98,6 +118,67 @@ namespace LFAF_LABS{
             }
 
             return automaton;
+        }
+
+        public bool Type3(){
+            foreach(KeyValuePair<string, List<string>> production in P){
+                if(production.Key.Length > 1){
+                    return false;
+                }
+                foreach(string p in production.Value){
+                    if (p.Length > 2 || (p.Length == 1 && char.IsUpper(p[0]))){
+                        return false;
+                    }
+
+                    else if (p.Length == 0 || (p.Length == 1 && char.IsUpper(p[0]))){
+                        return false;
+                    }
+
+                    else if (p.Length == 2 && char.IsUpper(p[0]) && char.IsLower(p[1])){
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public bool Type2(){
+            foreach(KeyValuePair<string, List<string>> production in P){
+                if(production.Key.Length > 1){
+                    return false;
+                }
+                foreach(string p in production.Value){
+                    if (p.Length == 0 || (p.Length == 1 && char.IsUpper(p[0]))){
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public bool Type1(){
+            foreach (KeyValuePair<string, List<string>> production in P){
+                foreach(string p in production.Value){
+                    if(production.Key.Length >= p.Length){
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+   
+        public void typeDefinition(){
+            if (Type3())
+                Console.WriteLine("Type 3, Regular Grammar");
+            
+            else if (Type2())
+                Console.WriteLine("Type 2, Context Free");
+            
+            else if (Type1())
+                Console.WriteLine("Type 1, Context Sensitive");
+            
+            else 
+                Console.WriteLine("Type 0, Unrestricted");
         }
     }
 }
