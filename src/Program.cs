@@ -4,7 +4,6 @@ using System.Linq;
 using System.Collections.Generic;
 
 namespace LFAF_LABS{
-
     class Program{
         public static void Main(String[] args){
             // //LAB_1
@@ -103,7 +102,7 @@ namespace LFAF_LABS{
                     }
 
                     else{
-                        for (int i = 0; i < 10; i++) {
+                        for (int i = 0; i < 10; i++){
                         x++;
                     }
                     break;
@@ -116,7 +115,7 @@ namespace LFAF_LABS{
             List<(string, string)> tokens = l.Tokenize(program);
 
             foreach ((string tokenName, string tokenValue) in tokens){
-                Console.WriteLine($"Token: ({tokenName} : {tokenValue})");
+                Console.WriteLine($"Token: ({tokenName} : {tokenValue})"); 
             }
         }
     }
