@@ -31,6 +31,7 @@ namespace LFAF_LABS{
             { "NUMBER", @"\d+(\.\d+)?" },
             { "STRING", @"""[^""]*""" },
             { "WHITESPACE", @"\s" },
+            { "COMMENT", @"\//"}
         };
 
         private List<(string, Regex)> tokenRegexes = new List<(string, Regex)>();
@@ -46,6 +47,19 @@ namespace LFAF_LABS{
 
             while (!string.IsNullOrEmpty(program)){
                 bool match = false;
+
+                if (IsComment(program)){
+                    int endOfLine = program.IndexOf('\n');
+                    if (endOfLine >= 0){
+                        program = program.Substring(endOfLine + 1);
+                    }
+                    
+                    else{
+                        program = string.Empty;
+                    }
+                    continue;
+                }
+
                 foreach ((string tokenName, Regex regex) in tokenRegexes){
                     Match tokenMatch = regex.Match(program);
                     if (tokenMatch.Success){
@@ -53,6 +67,7 @@ namespace LFAF_LABS{
                         if (tokenName != "WHITESPACE"){
                             tokens.Add(token);
                         }
+
                         program = program.Substring(tokenMatch.Length);
                         match = true;
                         break;
@@ -63,6 +78,10 @@ namespace LFAF_LABS{
                 }
             }
             return tokens;
+        }
+
+        private bool IsComment(string token){
+            return token.StartsWith("//");
         }
     }
 }
