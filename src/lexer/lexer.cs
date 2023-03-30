@@ -50,13 +50,7 @@ namespace LFAF_LABS{
 
                 if (IsComment(program)){
                     int endOfLine = program.IndexOf('\n');
-                    if (endOfLine >= 0){
-                        program = program.Substring(endOfLine + 1);
-                    }
-                    
-                    else{
-                        program = string.Empty;
-                    }
+                    program = program.Substring(endOfLine + 1);
                     continue;
                 }
 
@@ -80,7 +74,7 @@ namespace LFAF_LABS{
             return tokens;
         }
 
-        private bool IsComment(string token){
+        public bool IsComment(string token){
             return token.StartsWith("//");
         }
     }

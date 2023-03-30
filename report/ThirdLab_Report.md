@@ -65,6 +65,7 @@ private static Dictionary<string, string> tokenPatterns = new Dictionary<string,
     { "NUMBER", @"\d+(\.\d+)?" },
     { "STRING", @"""[^""]*""" },
     { "WHITESPACE", @"\s" },
+    { "COMMENT", @"\//"}
 };
 ```
 
@@ -80,7 +81,15 @@ public Lexer(){
 }
 ```
 
-The following `Tokenize` function takes a string input and returns a list of tokens (tokenName and its value). After that I defined a list `tokens`, where will be stored matched tokens. In the while loop, which iterates untill the string is not empty, the code goes through each regular expression in the list `tokenRegexes`, where each item in the list is a pair of a string (the name of a token) and a regular expression used to identify that token in the input program. After that we try to match every regular expression to the beginning of the input string using `Match` function. If the match succeeds, and it's not the `WHITESPACE` token, we add it to the list of tokens. After that we take the unprocessed string using `Substring` function. If the code gets an unknown symbol, it prints the error.
+Function to check if a string is a comment:
+
+```c#
+private bool IsComment(string token){
+   return token.StartsWith("//");
+}
+```
+
+The following `Tokenize` function takes a string input and returns a list of tokens (tokenName and its value). After that I defined a list `tokens`, where will be stored matched tokens. In the while loop, which iterates untill the string is not empty, the code first checks if the string is a `COMMENT`, and if it is, it ignores the entire line. After than it goes through each regular expression in the list `tokenRegexes`, where each item in the list is a pair of a string (the name of a token) and a regular expression used to identify that token in the input program. After that we try to match every regular expression to the beginning of the input string using `Match` function. If the match succeeds, and it's not the `WHITESPACE` token, we add it to the list of tokens. After that we take the unprocessed string using `Substring` function. If the code gets an unknown symbol, it prints the error.
 
 ```c#
 public List<(string, string)> Tokenize(string program){
@@ -88,6 +97,13 @@ public List<(string, string)> Tokenize(string program){
 
     while (!string.IsNullOrEmpty(program)){
         bool match = false;
+
+        if (IsComment(program)){
+            int endOfLine = program.IndexOf('\n');
+            program = program.Substring(endOfLine + 1);
+            continue;
+        }
+
         foreach ((string tokenName, Regex regex) in tokenRegexes){
             Match tokenMatch = regex.Match(program);
             if (tokenMatch.Success){
@@ -95,6 +111,7 @@ public List<(string, string)> Tokenize(string program){
                 if (tokenName != "WHITESPACE"){
                     tokens.Add(token);
                 }
+
                 program = program.Substring(tokenMatch.Length);
                 match = true;
                 break;
@@ -105,7 +122,7 @@ public List<(string, string)> Tokenize(string program){
         }
     }
     return tokens;
-    }
+}
 ```
 
 ## Conclusions / Screenshots / Results
@@ -123,6 +140,7 @@ function func(){
     if (x != y){
         return y;
     }
+    //some comment
 
     else{
         for (int i = 0; i < 10; i++){
