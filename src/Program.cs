@@ -1,11 +1,11 @@
-﻿using System;
-using static System.Text.Json.JsonSerializer;
-using System.Linq;
-using System.Collections.Generic;
+﻿// using System;
+// using static System.Text.Json.JsonSerializer;
+// using System.Linq;
+// using System.Collections.Generic;
 
-namespace LFAF_LABS{
-    class Program{
-        public static void Main(String[] args){
+// namespace LFAF_LABS{
+//     class Program{
+//         public static void Main(String[] args){
             // //LAB_1
             // Grammar grammar = new Grammar();
             // grammar.AddVN("S");
@@ -91,33 +91,36 @@ namespace LFAF_LABS{
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
            
             // //LAB_3
-            string program = @"
-                function func(){
-                    var x = 34;
-                    var y = 55;
-                    var string = ""hello world"";
+        //     string program = @"
+        //         function func(){
+        //             var x = 34;
+        //             var y = 55;
+        //             var string = ""hello world"";
 
-                    if (x != y){
-                        return y;
-                    }
-                    //some comment
+        //             if (x != y){
+        //                 return y;
+        //             }
+        //             //some comment
 
-                    else{
-                        for (int i = 0; i < 10; i++){
-                        x++;
-                    }
-                    break;
-                }
+        //             else{
+        //                 for (int i = 0; i < 10; i++){
+        //                 x++;
+        //             }
+        //             break;
+        //         }
 
-            ";
+        //     ";
 
-            Lexer l = new Lexer();
+        //     Lexer l = new Lexer();
 
-            List<(string, string)> tokens = l.Tokenize(program);
+        //     List<(string, string)> tokens = l.Tokenize(program);
 
-            foreach ((string tokenName, string tokenValue) in tokens){
-                Console.WriteLine($"Token: ({tokenName} : {tokenValue})"); 
-            }
-        }
-    }
-}
+        //     foreach ((string tokenName, string tokenValue) in tokens){
+        //         Console.WriteLine($"Token: ({tokenName} : {tokenValue})"); 
+        //     }
+        // }
+
+
+//         }
+//     }
+// }
