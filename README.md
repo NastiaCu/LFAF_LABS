@@ -36,3 +36,16 @@ F = {q3},
 δ(q0,b) = q2,
 δ(q2,c) = q3.
 ```
+# Lab 4
+
+Variant 11
+```
+G = {Vn, Vt, S, P},
+Vt = {a,b},
+Vn = {S, A, B, C, D},
+S -> bA | AC
+A -> bS | BC | AbAa
+B -> BbaA | a | bSa
+C -> e
+D -> AB
+```
