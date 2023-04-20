@@ -24,16 +24,6 @@ namespace LFAF_LABS{
             grammar.AddProduction("B", "bSa");
             grammar.AddProduction("C", "e");
             grammar.AddProduction("D", "AB");
-            // grammar.AddProduction("S", "dB");
-            // grammar.AddProduction("S", "A");
-            // grammar.AddProduction("A", "d");
-            // grammar.AddProduction("A", "dS");
-            // grammar.AddProduction("A", "aBdAB");
-            // grammar.AddProduction("B", "a");
-            // grammar.AddProduction("B", "dA");
-            // grammar.AddProduction("B", "A");
-            // grammar.AddProduction("B", "e");
-            // grammar.AddProduction("C", "Aa");
             grammar.AddStart("S");
 
             Console.WriteLine("Original Grammar");
@@ -43,7 +33,7 @@ namespace LFAF_LABS{
             
             Console.WriteLine("--------------------------");
             Console.WriteLine("Eliminated epsilon productions");
-            Converter c = new Converter();
+            Converter c = new Converter(grammar);
             c.EliminateEProductions(grammar.P);
 
             foreach (KeyValuePair<string, List<string>> entry in grammar.P){
@@ -75,17 +65,21 @@ namespace LFAF_LABS{
             }
 
             Console.WriteLine("--------------------------");
-            Console.WriteLine("CNF grammar");
-            // c.ConvertToTwoNonterminalsOrTerminal(grammar.P, grammar);
-            // c.ConvertToTwoNonterminals(grammar.P, grammar);
+            Console.WriteLine("Intermidiate result");
+
             c.ConvertToCNF(grammar.P, grammar);
            
             foreach (KeyValuePair<string, List<string>> entry in grammar.P){
                 Console.WriteLine($"{entry.Key} -> {string.Join(" | ", entry.Value)}");
             }
-            foreach (string s in grammar.VN){
-                Console.WriteLine(s);
-            }
+
+            Console.WriteLine("--------------------------");
+            Console.WriteLine("Final Result");
+
+            c.GetNewRightProd();
+            foreach (KeyValuePair<string, List<string>> entry in grammar.P){
+                Console.WriteLine($"{entry.Key} -> {string.Join(" | ", entry.Value)}");
+            }            
         }
     }
 }

@@ -18,7 +18,7 @@ namespace LFAF_LABS{
         }
 
         public Dictionary<string, List<string>> GetP(){
-            Console.WriteLine(P);
+            // Console.WriteLine(P);
             return P;
         }
 

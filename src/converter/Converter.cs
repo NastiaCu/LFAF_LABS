@@ -7,6 +7,15 @@ using System.Text;
 namespace LFAF_LABS{
     class Converter{
 
+        private Grammar grammar;
+        private Dictionary<string, string> newProdLookUp = new Dictionary<string, string>();
+        private static Dictionary<string, List<string>> newProductions = new Dictionary<string, List<string>>();
+        private static int count = 0;
+
+        public Converter(Grammar grammar) {
+            this.grammar = grammar;
+        }
+
         public void EliminateEProductions(Dictionary<string, List<string>> productions){
             List<string> nullableSymbols = productions.Where(x => x.Value.Contains("e")).Select(x => x.Key).ToList();
 
@@ -36,11 +45,11 @@ namespace LFAF_LABS{
                         newProductions.Add(production);
                     }
                 }
-                productions[symbol] = newProductions;
+                productions[symbol] = newProductions;                
             }
         }
 
-       public void EliminateUnitProductions(Dictionary<string, List<string>> productions){
+        public void EliminateUnitProductions(Dictionary<string, List<string>> productions){
             bool changed = true;
 
             while (changed){
@@ -132,60 +141,84 @@ namespace LFAF_LABS{
         }
 
         public void ConvertToCNF(Dictionary<string, List<string>> productions, Grammar g){
-            List<string> existingSymbols = new List<string>(productions.Keys);
             List<string> keys = new List<string>(productions.Keys); 
+
             foreach (string vt in g.VT){
-                string newSymbol = GenerateNewSymbol(existingSymbols);
+                string newSymbol = NewLP();
                 g.AddProduction(newSymbol, vt);
-                existingSymbols.Add(newSymbol);
                 g.AddVN(newSymbol);
+
                 foreach (string lhs in keys){
                     List<string> rhs = productions[lhs];
+
                     for (int i = 0; i < rhs.Count; i++){
                         if (rhs[i].Length > 1){
-                        string oldProduction = rhs[i];
-                        string newProduction = oldProduction.Replace(vt, newSymbol);
-                        rhs[i] = newProduction;
-                        }
-                    
-                        else if (rhs[i].Length > 2) {
                             string oldProduction = rhs[i];
-                            string[] nonterminals = oldProduction.Split(new[] {"X"}, StringSplitOptions.RemoveEmptyEntries);
-                            string newProduction = nonterminals[0] + "X" + nonterminals[1];
-                            string currentSymbol = newSymbol;
-                            
-                            for (int j = 2; j < nonterminals.Length; j++) {
-                                string nextSymbol = GenerateNewSymbol(existingSymbols);
-                                g.AddProduction(currentSymbol, "X" + nonterminals[j-1] + nextSymbol);
-                                existingSymbols.Add(nextSymbol);
-                                g.AddVN(nextSymbol);
-                                currentSymbol = nextSymbol;
-                                }
-                            }
+                            string newProduction = oldProduction.Replace(vt, newSymbol);
+                            rhs[i] = newProduction;
                         }
-                
+                    }
                     productions[lhs] = rhs;
                 }
-            }  
+            }
+        }
+
+        public string NewLP(){
+            return "X" + count++;
+        }
+
+        public void GetNewRightProd(){
+            foreach (string key in grammar.GetP().Keys){
+                List<string> values = grammar.GetP()[key];
+                values = values.Select(FormProd).ToList();
+                grammar.GetP()[key] = values;
+            }
+            
+            foreach (KeyValuePair<string, List<string>> entry in newProductions){
+                string key = entry.Key;
+                List<string> values = entry.Value;
+                grammar.GetP()[key] = values;
+            }
+        }
+
+        public string FormProd(string prod) {
+            int upperCount = prod.Count(char.IsUpper);
+            while (upperCount > 2){
+                int append = 0;
+                string newGroup = "";
+                for (int i = 0; i < prod.Length; i++){
+                    if (append < 2) {
+                        if (prod[i] == 'X'){
+                            append++;
+                            newGroup += prod.Substring(i, 2);
+                            i++;
+                        }
+
+                        else{
+                            append++;
+                            newGroup += prod.Substring(i, 1);
+                        }
+                    }
+                }
+
+                if (newProdLookUp.ContainsKey(newGroup)){
+                    prod = prod.Replace(newGroup, newProdLookUp[newGroup]);
+                }
+
+                else{
+                    string newLP = NewLP();
+                    newProductions[newLP] = new List<string>() { newGroup };
+                    newProdLookUp[newGroup] = newLP;
+                    grammar.AddVN(newLP);
+                    prod = prod.Replace(newGroup, newLP);
+                }
+                upperCount = prod.Count(char.IsUpper);
+            }
+            return prod;
         }
 
         public bool IsTerminal(string symbol){
             return symbol.Length == 1 && char.IsLower(symbol[0]);
         }
-
-        public string GenerateNewSymbol(List<string> existingSymbols){
-            int i = 1;
-
-            while (true){
-                string newSymbol = "X" + i.ToString();
-
-                if (!existingSymbols.Contains(newSymbol)){
-                    return newSymbol;
-                }
-
-                i++;
-            }
-        }
     }
 }
-      

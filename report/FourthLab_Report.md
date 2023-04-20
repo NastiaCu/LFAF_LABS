@@ -177,6 +177,91 @@ public void EliminateInaccesibleSymbols(Dictionary<string, List<string>> product
 }
 ```
 
+The following function is an intermidiate step in converting a grammar to Chomsky Normal Form. It introduces new productions and symbols. For each terminal symbol, it creates a new non-terminal symbol and replaces any occurrence of that terminal symbol in the grammar with the new non-terminal symbol.
+
+```c#
+public void ConvertToCNF(Dictionary<string, List<string>> productions, Grammar g){
+   List<string> keys = new List<string>(productions.Keys);
+
+   foreach (string vt in g.VT){
+       string newSymbol = NewLP();
+       g.AddProduction(newSymbol, vt);
+       g.AddVN(newSymbol);
+
+       foreach (string lhs in keys){
+           List<string> rhs = productions[lhs];
+
+           for (int i = 0; i < rhs.Count; i++){
+               if (rhs[i].Length > 1){
+                   string oldProduction = rhs[i];
+                   string newProduction = oldProduction.Replace(vt, newSymbol);
+                   rhs[i] = newProduction;
+               }
+           }
+           productions[lhs] = rhs;
+       }
+   }
+}
+```
+
+The following function takes a production string and modifies it. It counts the number of uppercase characters in the input string and if it's greater than 2, it creates a new group of at most 2 uppercase characters and replaces the original group with a new non-terminal symbol. If the new group already exists in a dictionary, it replaces the group with the corresponding non-terminal symbol. If not, it creates a new non-terminal symbol and adds it to the dictionary. The function returns the modified production string.
+
+```c#
+public string FormProd(string prod) {
+    int upperCount = prod.Count(char.IsUpper);
+    while (upperCount > 2){
+        int append = 0;
+        string newGroup = "";
+        for (int i = 0; i < prod.Length; i++){
+            if (append < 2) {
+                if (prod[i] == 'X'){
+                    append++;
+                    newGroup += prod.Substring(i, 2);
+                    i++;
+                }
+
+                else{
+                    append++;
+                    newGroup += prod.Substring(i, 1);
+                }
+            }
+        }
+
+        if (newProdLookUp.ContainsKey(newGroup)){
+            prod = prod.Replace(newGroup, newProdLookUp[newGroup]);
+        }
+
+        else{
+            string newLP = NewLP();
+            newProductions[newLP] = new List<string>() { newGroup };
+            newProdLookUp[newGroup] = newLP;
+            grammar.AddVN(newLP);
+            prod = prod.Replace(newGroup, newLP);
+        }
+        upperCount = prod.Count(char.IsUpper);
+    }
+    return prod;
+}
+```
+
+The last function updates the right-hand side productions of a grammar by applying the `FormProd` function to each production. It also updates the right-hand side productions with any new productions generated during the conversion process.
+
+```c#
+public void GetNewRightProd(){
+    foreach (string key in grammar.GetP().Keys){
+        List<string> values = grammar.GetP()[key];
+        values = values.Select(FormProd).ToList();
+        grammar.GetP()[key] = values;
+    }
+
+    foreach (KeyValuePair<string, List<string>> entry in newProductions){
+        string key = entry.Key;
+        List<string> values = entry.Value;
+        grammar.GetP()[key] = values;
+    }
+}
+```
+
 ## Conclusions / Screenshots / Results
 
 After performing this laboratory work I learned how to make the conversion of CFG in CNF. In this work I implemented separate funcions to perform all the requered steps and see the intermidiate results.
@@ -215,6 +300,25 @@ Eliminated inaccessible symbols
 S -> bA | bS | AbAa | BbaA | a | bSa
 A -> bS | AbAa | BbaA | a | bSa
 B -> BbaA | a | bSa
+--------------------------
+Intermidiate result
+S -> X1A | X1S | AX1AX0 | BX1X0A | a | X1SX0
+A -> X1S | AX1AX0 | BX1X0A | a | X1SX0
+B -> BX1X0A | a | X1SX0
+X1 -> b
+X0 -> a
+--------------------------
+Final Result
+S -> X1A | X1S | X3X0 | X5A | a | X6X0
+A -> X1S | X3X0 | X5A | a | X6X0
+B -> X5A | a | X6X0
+X1 -> b
+X0 -> a
+X2 -> AX1
+X3 -> X2A
+X4 -> BX1
+X5 -> X4X0
+X6 -> X1S
 ```
 
 ## References
