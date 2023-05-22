@@ -4,46 +4,46 @@ using System.Text.RegularExpressions;
 
 
 namespace LFAF_LABS{
-    class Lexer{
-        private static Dictionary<string, string> tokenPatterns = new Dictionary<string, string>(){
-            { "LPAREN", @"\(" },
-            { "RPAREN", @"\)" },
-            { "LBRACE", @"\{" },
-            { "RBRACE", @"\}" },
-            { "COMMA", @"\," },
-            { "ASSIGN_EQUAL", @"\=" },
-            { "SEMICOLON", @"\;" },
-            { "PLUS", @"\+" },
-            { "MINUS", @"\-" },
-            { "MULTIPLY", @"\*" },
-            { "DIVIDE", @"\/" },
-            { "GREATER", @"\>" },
-            { "LESS", @"\<" },
-            { "NOT_EQUAL", @"\!=" },
-            { "IF", @"if" },
-            { "ELSE", @"else" },
-            { "FOR", @"for" },
-            { "RETURN", @"return" },
-            { "BREAK", @"break" },
-            { "VAR", @"var" },
-            { "FUNCTION", @"function" },
-            { "ID", @"[a-zA-Z_]\w*" },
-            { "NUMBER", @"\d+(\.\d+)?" },
-            { "STRING", @"""[^""]*""" },
-            { "WHITESPACE", @"\s" },
-            { "COMMENT", @"\//"}
+    public class Lexer{
+        private static Dictionary<TokenType, string> tokenPatterns = new Dictionary<TokenType, string>(){
+            { TokenType.LPAREN, @"\(" },
+            { TokenType.RPAREN, @"\)" },
+            { TokenType.LBRACE, @"\{" },
+            { TokenType.RBRACE, @"\}" },
+            { TokenType.COMMA, @"\," },
+            { TokenType.ASSIGN_EQUAL, @"\=" },
+            { TokenType.SEMICOLON, @"\;" },
+            { TokenType.PLUS, @"\+" },
+            { TokenType.MINUS, @"\-" },
+            { TokenType.MULTIPLY, @"\*" },
+            { TokenType.DIVIDE, @"\/" },
+            { TokenType.GREATER, @"\>" },
+            { TokenType.LESS, @"\<" },
+            { TokenType.NOT_EQUAL, @"\!=" },
+            { TokenType.IF, @"if" },
+            { TokenType.ELSE, @"else" },
+            { TokenType.FOR, @"for" },
+            { TokenType.RETURN, @"return" },
+            { TokenType.BREAK, @"break" },
+            { TokenType.VAR, @"var" },
+            { TokenType.FUNCTION, @"function" },
+            { TokenType.ID, @"[a-zA-Z_]\w*" },
+            { TokenType.NUMBER, @"\d+(\.\d+)?" },
+            { TokenType.STRING, @"""[^""]*""" },
+            { TokenType.WHITESPACE, @"\s" },
+            { TokenType.COMMENT, @"\//" }
         };
 
-        private List<(string, Regex)> tokenRegexes = new List<(string, Regex)>();
+        private List<(TokenType, Regex)> tokenRegexes = new List<(TokenType, Regex)>();
 
         public Lexer(){
-            foreach (KeyValuePair<string, string> pattern in tokenPatterns){
+            foreach (KeyValuePair<TokenType, string> pattern in tokenPatterns){
                 tokenRegexes.Add((pattern.Key, new Regex("^" + pattern.Value)));
             }
         }
 
-        public List<(string, string)> Tokenize(string program){
-            List<(string, string)> tokens = new List<(string, string)>();
+        public List<(TokenType, string)> Tokenize(string program){
+            List<(TokenType, string)> tokens = new List<(TokenType, string)>();
 
             while (!string.IsNullOrEmpty(program)){
                 bool match = false;
@@ -54,11 +54,11 @@ namespace LFAF_LABS{
                     continue;
                 }
 
-                foreach ((string tokenName, Regex regex) in tokenRegexes){
+                foreach ((TokenType tokenType, Regex regex) in tokenRegexes){
                     Match tokenMatch = regex.Match(program);
                     if (tokenMatch.Success){
-                        (string, string) token = (tokenName, tokenMatch.Value);
-                        if (tokenName != "WHITESPACE"){
+                        (TokenType, string) token = (tokenType, tokenMatch.Value);
+                        if (tokenType != TokenType.WHITESPACE){
                             tokens.Add(token);
                         }
 
@@ -67,6 +67,7 @@ namespace LFAF_LABS{
                         break;
                     }
                 }
+                
                 if (!match){
                     Console.WriteLine("Invalid syntax: " + program);
                 }
