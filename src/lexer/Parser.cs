@@ -68,8 +68,6 @@ namespace LFAF_LABS{
             return variableDeclarationNode;
         }
 
-
-
         private ASTNode ParseFunctionDeclarationStatement(){
             var functionDeclarationNode = new ASTNode("FunctionDeclaration");
             Consume(TokenType.FUNCTION);
