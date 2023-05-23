@@ -60,7 +60,7 @@ public enum TokenType{
 }
 ```
 
-For this laboratory work I hade to implement the `AST` class. The `ASTNode` class represents a node in an abstract syntax tree. It has a `Value` property to store the value or label of the node, and a `Children` list to store its child nodes. The `AddChild` method adds a child node to the current node. The `Visualize` method is used to print a formatted visualization of the `AST` structure. It recursively traverses the `AST`, printing each node with appropriate indentation. The `GetIndentation` helper method calculates the indentation based on the given indent level.
+For this laboratory work I had to implement the `AST` class. The `ASTNode` class represents a node in an abstract syntax tree. It has a `Value` property to store the value or label of the node, and a `Children` list to store its child nodes. The `AddChild` method adds a child node to the current node. The `Visualize` method is used to print a formatted visualization of the `AST` structure. It recursively traverses the `AST`, printing each node with appropriate indentation. The `GetIndentation` helper method calculates the indentation based on the given indent level.
 
 ```c#
 public class ASTNode{
@@ -111,8 +111,6 @@ The `ParseProgram` method creates the root node for the program and iteratively 
 
 The `ParseStatement` method checks the type of the current token and calls the corresponding parsing method based on the token type. If none of the statement types match, it assumes it to be an expression statement and calls `ParseExpressionStatement`.
 
-The `ParseVariableDeclarationStatement` method parses a variable declaration statement. It creates an `ASTNode` for the variable declaration, consumes the `VAR` token, and parses the identifier and optional expression. The identifier node and the expression node (if present) are added as children to the variable declaration node, and the method returns the variable declaration node.
-
 ```c#
 public class Parser{
     private List<(TokenType, string)> tokens = new List<(TokenType, string)>();
@@ -148,21 +146,103 @@ public class Parser{
             return ParseBreakStatement();
         return ParseExpressionStatement();
     }
+}
+```
 
-    private ASTNode ParseVariableDeclarationStatement(){
-        var variableDeclarationNode = new ASTNode("VariableDeclaration");
-        Consume(TokenType.VAR);
-        var identifierToken = Consume(TokenType.ID);
-        var identifierNode = new ASTNode(identifierToken.Item2);
-        variableDeclarationNode.AddChild(identifierNode);
-        if (Match(TokenType.ASSIGN_EQUAL)){
-            Consume(TokenType.ASSIGN_EQUAL);
-            var expression = ParseExpression();
-            variableDeclarationNode.AddChild(expression);
-        }
-        Consume(TokenType.SEMICOLON);
-        return variableDeclarationNode;
+`ParseExpressionStatement`: Parses an expression statement. If the current token matches the variable declaration token, it calls `ParseVariableDeclaration` to parse the variable declaration statement. Otherwise, it calls `ParseExpression` to parse a general expression.
+
+`ParseExpression`: Parses an expression. It delegates the parsing to `ParseAssignmentExpression` to handle assignment expressions.
+
+`ParseAssignmentExpression`: Parses an assignment expression. It first parses the left-hand side of the assignment by calling `ParseEqualityExpression`. If the current token matches the assignment operator token, it consumes the token, parses the right-hand side of the assignment recursively by calling `ParseAssignmentExpression`, and creates an `AST` node for the assignment expression. The left and right expressions are added as children to the assignment node. Finally, it returns the assignment node. If there is no assignment operator, it simply returns the left-hand side expression.
+
+```c#
+private ASTNode ParseExpressionStatement(){
+    if (Match(TokenType.VAR)){
+       return ParseVariableDeclaration();
     }
+
+    return ParseExpression();
+}
+
+
+private ASTNode ParseExpression(){
+    return ParseAssignmentExpression();
+}
+
+private ASTNode ParseAssignmentExpression(){
+    var left = ParseEqualityExpression();
+    if (Match(TokenType.ASSIGN_EQUAL)){
+       Consume(TokenType.ASSIGN_EQUAL);
+       var right = ParseAssignmentExpression();
+       var assignmentNode = new ASTNode("AssignmentExpression");
+       assignmentNode.AddChild(left);
+       assignmentNode.AddChild(right);
+       return assignmentNode;
+    }
+    return left;
+}
+```
+
+The `ParseVariableDeclarationStatement` method parses a variable declaration statement. It creates an `ASTNode` for the variable declaration, consumes the `VAR` token, and parses the identifier and optional expression. The identifier node and the expression node (if present) are added as children to the variable declaration node, and the method returns the variable declaration node.
+
+```c#
+private ASTNode ParseVariableDeclarationStatement(){
+    var variableDeclarationNode = new ASTNode("VariableDeclaration");
+    Consume(TokenType.VAR);
+    var identifierToken = Consume(TokenType.ID);
+    var identifierNode = new ASTNode(identifierToken.Item2);
+    variableDeclarationNode.AddChild(identifierNode);
+    if (Match(TokenType.ASSIGN_EQUAL)){
+        Consume(TokenType.ASSIGN_EQUAL);
+        var expression = ParseExpression();
+        variableDeclarationNode.AddChild(expression);
+    }
+    Consume(TokenType.SEMICOLON);
+    return variableDeclarationNode;
+}
+```
+
+Additional helper methods:
+
+`ParseBlock`: Parses a block of code by iterating through statements within the block using `ParseStatement` and adding them as children to a new "Block" AST node. It expects the block to start with a left brace token and end with a right brace token.
+
+`Consume`: Consumes (matches and moves to the next) tokens from the token stream. It checks if the current token matches any expected token types, returns the matched token, and advances the current token index. If no match is found, it throws an exception for invalid syntax.
+
+`Match`: Checks if the current token matches any expected token types. Returns true if a match is found, otherwise false. It also checks if the end of the token stream has been reached.
+
+`IsEndOfTokens`: Checks if the current token index has exceeded the total number of tokens in the token stream, indicating the end of the token stream.
+
+```c#
+private ASTNode ParseBlock(){
+    var blockNode = new ASTNode("Block");
+    Consume(TokenType.LBRACE);
+    while (!Match(TokenType.RBRACE)){
+        var statement = ParseStatement();
+        blockNode.AddChild(statement);
+    }
+    Consume(TokenType.RBRACE);
+    return blockNode;
+}
+
+private (TokenType, string) Consume(params TokenType[] expectedTokenTypes){
+    foreach (var tokenType in expectedTokenTypes){
+        if (Match(tokenType)){
+            var token = tokens[currentTokenIndex++];
+            return token;
+        }
+    }
+
+    throw new Exception("Invalid syntax: " + tokens[currentTokenIndex].ToString());
+}
+
+private bool Match(params TokenType[] expectedTokenTypes){
+    if (IsEndOfTokens())
+        return false;
+    return expectedTokenTypes.Contains(tokens[currentTokenIndex].Item1);
+}
+
+private bool IsEndOfTokens(){
+    return currentTokenIndex >= tokens.Count;
 }
 ```
 
